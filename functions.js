@@ -9,6 +9,13 @@ function drawBoard(){
 }
 
 function onMouseMove(event){ // follows the mouse
-    x = event.x;
-    y = event.y;
+    mouseX = event.x;
+    mouseY = event.y;
+}
+
+function followMouse(){
+  if(flag){
+    piece.x = mouseX - (length / 2);
+    piece.y = mouseY - (length / 2);
+  }
 }

@@ -7,6 +7,7 @@
     <title>Chess.guy</title>
     <script src="graphics.js"></script>
     <script src="functions.js"></script>
+    <script src="classes.js"></script>
 </head>
 <body>
     <div>
@@ -20,26 +21,23 @@
     const context = canvas.getContext('2d');
 
     // game elements
-    let x = 0;
-    let y = 0;
+    let mouseX = 0;
+    let mouseY = 0;
     let length = 70; // cursor length
     let unit = canvas.height / 8;
+    let margin = (unit - length) / 2;
     let flag = false;
-    class Piece {
-      constructor(x, y){
-        this.x = x; // piece x coordinate
-        this.y = y; // piece y coordinate
-        //this.position = [Math.round((this.y / unit) ), Math.round((this.x / unit))]
-      }
-    }
 
+    
+
+    
     //game objects
-    let p1Arr = [];
-    let p2Arr = [];
+    let whitePawns = [];
+    let blackPawns = [];
     
     for (let i = 0; i < 8; i++){
-      p1Arr.push(new Piece(15 + (i * unit), 715));
-      p2Arr.push(new Piece(15 + (i * unit), 15));
+      whitePawns.push(new Pawn((i * unit) + margin, (6 * unit) + margin, "white"));
+      blackPawns.push(new Pawn((i * unit) + margin, (1 * unit) + margin, "black"));
     }
     let piece;
     let board = [
@@ -54,16 +52,13 @@
     ];
 
     for (let i = 0; i < 8; i++){
-      board[7][i] = p1Arr[i];
-      board[0][i] = p2Arr[i];
+      board[6][i] = whitePawns[i];
+      board[1][i] = blackPawns[i];
     }
 
     setInterval(function(){
       draw();
-      if(flag){
-        piece.x = x - (length / 2);
-        piece.y = y - (length / 2);
-      }
+      followMouse();
     }, 1000/60)
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mousedown", onMouseDown);
@@ -71,29 +66,61 @@
 
     function draw(){
       drawBoard();
-      for (let i = 0; i < 8; i++){
-        drawRectangle(context, p1Arr[i].x, p1Arr[i].y, length, length, "white", 0, "black");
-        drawRectangle(context, p2Arr[i].x, p2Arr[i].y, length, length, "black", 0, "black");
+      for (let i = 0; i < whitePawns.length; i++){
+        drawRectangle(context, whitePawns[i].x, whitePawns[i].y, length, length, whitePawns[i].color, 0, "black");
       }
+      for (let i = 0; i < blackPawns.length; i++){
+        drawRectangle(context, blackPawns[i].x, blackPawns[i].y, length, length, blackPawns[i].color, 0, "black");
+      }
+      
     }
 
     function onMouseDown(event){ // when mouse is down, and the mouse is over the piece it removes the piece from the board
-      let cell = board[Math.floor(y / unit)][Math.floor(x / unit)]; // contents of the cell
+      let cell = board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)]; // contents of the cell
       if(cell == 0) return; // checks if user clickd on a a piece
       piece = cell; // impports cell contents to cuurent piece variable
-      if(x > piece.x && x < piece.x + length  && y > piece.y && y < piece.y + length){
+      if(mouseX > piece.x && mouseX < piece.x + length  && mouseY > piece.y && mouseY < piece.y + length){
         flag = true;
-        board[Math.floor(piece.y / unit)][Math.floor(piece.x / unit)] = 0;
+        piece.findPossibleMoves();
       }
     }
 
     function onMouseUp(event){// when mouse is up the piece stops following it and picks piece final location
-      if(flag){
+      if(flag){ 
         flag = false;
-        board[Math.floor(y / unit)][Math.floor(x / unit)] = piece;
+        // legal move
+        for(var i = 0; i < piece.possibleMoves.length; i++){
+          if(Math.floor(mouseY / unit) == piece.possibleMoves[i][0] && Math.floor(mouseX / unit) == piece.possibleMoves[i][1]){ // checks if requested move is equal to a possible move
+            board[piece.position[0]][piece.position[1]] = 0; // erases piece from board
+            board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
+            piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
+            centerPiece();
+            return;
+          }
+        }
+
+        // illegal move
+        piece.y = (piece.position[0] * unit) + margin ; // places piece at former position;
+        piece.x = (piece.position[1] * unit) + margin;
       }
     }
 
+    function centerPiece(){
+      piece.x = (Math.floor(mouseX / unit) * unit) + margin;
+      piece.y = (Math.floor(mouseY / unit) * unit) + margin;
+    }
+
+    function checkMove(cell){
+      if(cell == 0){
+        return true;
+      }
+    }
+
+    function checkCapture(cell, color){
+      if(cell != null && cell != 0 && cell.color != color){
+        return true;
+      }
+    }
     
 
   </script>
