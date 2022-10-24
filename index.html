@@ -82,7 +82,7 @@
       piece = cell; // impports cell contents to cuurent piece variable
       if(mouseX > piece.x && mouseX < piece.x + length  && mouseY > piece.y && mouseY < piece.y + length){
         flag = true;
-        piece.findPossibleMoves();
+        piece.findPossibleMoves(); 
       }
     }
 
@@ -96,6 +96,7 @@
             board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
             piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
             centerPiece();
+            resetMoves();
             return;
           }
         }
@@ -106,6 +107,7 @@
             board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
             piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
             centerPiece();
+            resetMoves();
             return;
           }
         }
@@ -121,18 +123,27 @@
       piece.y = (Math.floor(mouseY / unit) * unit) + margin;
     }
 
-    function checkMove(cell){
-      if(cell == 0){
-        return true;
-      }
+    function checkMove(reqY, reqX){
+      if(reqX < 0 || reqX > 7 || reqY < 0 || reqY > 7) return false;
+      let cell = board[reqY][reqX];
+      if(cell != 0)
+        return false;
+
+      return true;
     }
 
-    function checkCapture(cell, color){
-      if(cell != null && cell != 0 && cell.color != color){
-        return true;
-      }
+    function checkCapture(reqY, reqX, color){
+      if(reqX < 0 || reqX > 7 || reqY < 0 || reqY > 7) return false;
+      let cell = board[reqY][reqX];
+      if(cell == 0 || cell.color == color) return false;
+
+      return true;
     }
     
+    function resetMoves(){
+      piece.possibleMoves = [];
+      piece.possibleCaptures = [];
+    }
 
   </script>
 </body>

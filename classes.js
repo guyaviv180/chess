@@ -27,18 +27,19 @@ class Pawn extends Piece{
 
         let posY = this.position[0];
         let posX = this.position[1];
-        if(checkMove(board[posY + up][posX])){
+
+        if(checkMove(posY + up, posX)){
             this.possibleMoves.push([posY + up, posX]); // move forward once
         }
-        if(checkMove(board[posY + (up * 2)][posX]) && this.color == "white" && posY == 6 || this.color == "black" && posY == 1){
+        if(checkMove(posY + (up * 2), posX) && this.color == "white" && posY == 6 || this.color == "black" && posY == 1){
             this.possibleMoves.push([posY + (up * 2), posX]) // move forward twice
         }
       
-        if(checkCapture(board[posY + up][posX + up], this.color)){
+        if(checkCapture(posY + up, posX + up, this.color)){
             this.possibleCaptures.push([(posY + up), (posX + up)]); // capture diagonally right
         }
 
-        if(checkCapture(board[posY + up][posX - up], this.color)){
+        if(checkCapture(posY + up, posX - up, this.color)){
             this.possibleCaptures.push([(posY + up), (posX - up)]); // capture diagonally left
         }
     }
