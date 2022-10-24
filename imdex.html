@@ -27,9 +27,6 @@
     let unit = canvas.height / 8;
     let margin = (unit - length) / 2;
     let flag = false;
-
-    
-
     
     //game objects
     let whitePawns = [];
@@ -67,10 +64,14 @@
     function draw(){
       drawBoard();
       for (let i = 0; i < whitePawns.length; i++){
-        drawRectangle(context, whitePawns[i].x, whitePawns[i].y, length, length, whitePawns[i].color, 0, "black");
+        if (whitePawns[i].alive){
+          drawRectangle(context, whitePawns[i].x, whitePawns[i].y, length, length, whitePawns[i].color, 0, "black");
+        }
       }
       for (let i = 0; i < blackPawns.length; i++){
-        drawRectangle(context, blackPawns[i].x, blackPawns[i].y, length, length, blackPawns[i].color, 0, "black");
+        if (blackPawns[i].alive){
+          drawRectangle(context, blackPawns[i].x, blackPawns[i].y, length, length, blackPawns[i].color, 0, "black");
+        }
       }
       
     }
@@ -92,6 +93,16 @@
         for(var i = 0; i < piece.possibleMoves.length; i++){
           if(Math.floor(mouseY / unit) == piece.possibleMoves[i][0] && Math.floor(mouseX / unit) == piece.possibleMoves[i][1]){ // checks if requested move is equal to a possible move
             board[piece.position[0]][piece.position[1]] = 0; // erases piece from board
+            board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
+            piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
+            centerPiece();
+            return;
+          }
+        }
+        for(var i = 0; i < piece.possibleCaptures.length; i++){
+          if(Math.floor(mouseY / unit) == piece.possibleCaptures[i][0] && Math.floor(mouseX / unit) == piece.possibleCaptures[i][1]){
+            board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)].alive = false; // kills captures piece
+            board[piece.position[0]][piece.position[1]] = 0; // erases capturing piece from board
             board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
             piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
             centerPiece();

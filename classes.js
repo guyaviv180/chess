@@ -1,12 +1,13 @@
 class Piece{
     constructor(x, y, color){
-      this.x = x; // piece x coordinate
-      this.y = y; // piece y coordinate
-      this.color = color;
-      this.type;
-      this.position = [Math.floor(this.y / unit), Math.floor(this.x / unit)]
-      this.possibleMoves = [];
-      this.possibleCaptures = [];
+        this.alive = true;
+        this.x = x; // piece x coordinate
+        this.y = y; // piece y coordinate
+        this.color = color;
+        this.type;
+        this.position = [Math.floor(this.y / unit), Math.floor(this.x / unit)]
+        this.possibleMoves = [];
+        this.possibleCaptures = [];
     }
 
     findPossibleMoves(){}
@@ -16,8 +17,6 @@ class Pawn extends Piece{
     constructor(x, y, color){
         super(x, y, color);
         this.type = "Pawn";
-        this.possibleMoves = [];
-        this.possibleCaptures = [];
     }
 
     findPossibleMoves(){
@@ -36,11 +35,11 @@ class Pawn extends Piece{
         }
       
         if(checkCapture(board[posY + up][posX + up], this.color)){
-            this.possibleMoves.push([posY + up, posX + up]); // capture diagonally right
+            this.possibleCaptures.push([(posY + up), (posX + up)]); // capture diagonally right
         }
 
         if(checkCapture(board[posY + up][posX - up], this.color)){
-            this.possibleMoves.push([posY + up, posX - up]); // capture diagonally left
+            this.possibleCaptures.push([(posY + up), (posX - up)]); // capture diagonally left
         }
     }
 }
@@ -53,5 +52,5 @@ class Bishop extends Piece{
         this.possibleCaptures = [];
     }
 
-    
+
 }
