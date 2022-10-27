@@ -56,6 +56,10 @@ function drawTriangle() {
     context.stroke();
 }
 
+function drawImage(context, img, x, y, width, height){
+    context.drawImage(img, x, y, width, height);
+}
+
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }

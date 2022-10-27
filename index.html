@@ -5,146 +5,45 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess.guy</title>
-    <script src="graphics.js"></script>
-    <script src="functions.js"></script>
-    <script src="classes.js"></script>
+
 </head>
 <body>
+  <div style="display:none">
+    <img id="wp" src="img\wp.png">
+    <img id="bp" src="img\bp.png">
+    <img id="wb" src="img\wb.png">
+    <img id="bb" src="img\bb.png">
+    <img id="wn" src="img\wn.png">
+    <img id="bn" src="img\bn.png">
+    <img id="wr" src="img\wr.png">
+    <img id="br" src="img\br.png">
+    <img id="wq" src="img\wq.png">
+    <img id="bq" src="img\bq.png">
+    <img id="wk" src="img\wk.png">
+    <img id="bk" src="img\bk.png">
+  </div>
     <div>
-      <canvas id="myCanvas" width="800px" height="800px" style="background-color: black;"></canvas>
-    </div>
-
-  <script>
-
-    //site elements
-    const canvas = document.getElementById("myCanvas");
-    const context = canvas.getContext('2d');
-
-    // game elements
-    let mouseX = 0;
-    let mouseY = 0;
-    let length = 70; // cursor length
-    let unit = canvas.height / 8;
-    let margin = (unit - length) / 2;
-    let flag = false;
-    
-    //game objects
-    let whitePawns = [];
-    let blackPawns = [];
-    
-    for (let i = 0; i < 8; i++){
-      whitePawns.push(new Pawn((i * unit) + margin, (6 * unit) + margin, "white"));
-      blackPawns.push(new Pawn((i * unit) + margin, (1 * unit) + margin, "black"));
-    }
-    let piece;
-    let board = [
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0]
-    ];
-
-    for (let i = 0; i < 8; i++){
-      board[6][i] = whitePawns[i];
-      board[1][i] = blackPawns[i];
-    }
-
-    setInterval(function(){
-      draw();
-      followMouse();
-    }, 1000/60)
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mousedown", onMouseDown);
-    canvas.addEventListener("mouseup", onMouseUp)
-
-    function draw(){
-      drawBoard();
-      for (let i = 0; i < whitePawns.length; i++){
-        if (whitePawns[i].alive){
-          drawRectangle(context, whitePawns[i].x, whitePawns[i].y, length, length, whitePawns[i].color, 0, "black");
-        }
-      }
-      for (let i = 0; i < blackPawns.length; i++){
-        if (blackPawns[i].alive){
-          drawRectangle(context, blackPawns[i].x, blackPawns[i].y, length, length, blackPawns[i].color, 0, "black");
-        }
-      }
       
-    }
-
-    function onMouseDown(event){ // when mouse is down, and the mouse is over the piece it removes the piece from the board
-      let cell = board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)]; // contents of the cell
-      if(cell == 0) return; // checks if user clickd on a a piece
-      piece = cell; // impports cell contents to cuurent piece variable
-      if(mouseX > piece.x && mouseX < piece.x + length  && mouseY > piece.y && mouseY < piece.y + length){
-        flag = true;
-        piece.findPossibleMoves(); 
-      }
-    }
-
-    function onMouseUp(event){// when mouse is up the piece stops following it and picks piece final location
-      if(flag){ 
-        flag = false;
-        // legal move
-        for(var i = 0; i < piece.possibleMoves.length; i++){
-          if(Math.floor(mouseY / unit) == piece.possibleMoves[i][0] && Math.floor(mouseX / unit) == piece.possibleMoves[i][1]){ // checks if requested move is equal to a possible move
-            board[piece.position[0]][piece.position[1]] = 0; // erases piece from board
-            board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
-            piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
-            centerPiece();
-            resetMoves();
-            return;
-          }
-        }
-        for(var i = 0; i < piece.possibleCaptures.length; i++){
-          if(Math.floor(mouseY / unit) == piece.possibleCaptures[i][0] && Math.floor(mouseX / unit) == piece.possibleCaptures[i][1]){
-            board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)].alive = false; // kills captures piece
-            board[piece.position[0]][piece.position[1]] = 0; // erases capturing piece from board
-            board[Math.floor(mouseY / unit)][Math.floor(mouseX / unit)] = piece; // places piece into board in new position
-            piece.position = [Math.floor(mouseY / unit), Math.floor(mouseX / unit)]; // changes piece position property to new position
-            centerPiece();
-            resetMoves();
-            return;
-          }
-        }
-
-        // illegal move
-        piece.y = (piece.position[0] * unit) + margin ; // places piece at former position;
-        piece.x = (piece.position[1] * unit) + margin;
-      }
-    }
-
-    function centerPiece(){
-      piece.x = (Math.floor(mouseX / unit) * unit) + margin;
-      piece.y = (Math.floor(mouseY / unit) * unit) + margin;
-    }
-
-    function checkMove(reqY, reqX){
-      if(reqX < 0 || reqX > 7 || reqY < 0 || reqY > 7) return false;
-      let cell = board[reqY][reqX];
-      if(cell != 0)
-        return false;
-
-      return true;
-    }
-
-    function checkCapture(reqY, reqX, color){
-      if(reqX < 0 || reqX > 7 || reqY < 0 || reqY > 7) return false;
-      let cell = board[reqY][reqX];
-      if(cell == 0 || cell.color == color) return false;
-
-      return true;
-    }
-    
-    function resetMoves(){
-      piece.possibleMoves = [];
-      piece.possibleCaptures = [];
-    }
-
-  </script>
+      <canvas id="myCanvas" width="800px" height="800px" style="background-color: black;"></canvas>
+      <button onclick="flipBoard()">flip</button>
+      
+    </div>
+    <script>
+      let wpImg = document.getElementById("wp");
+      let bpImg = document.getElementById("bp");
+      let wbImg = document.getElementById("wb");
+      let bbImg = document.getElementById("bb");
+      let wnImg = document.getElementById("wn");
+      let bnImg = document.getElementById("bn");
+      let wrImg = document.getElementById("wr");
+      let brImg = document.getElementById("br");
+      let wqImg = document.getElementById("wq");
+      let bqImg = document.getElementById("bq");
+      let wkImg = document.getElementById("wk");
+      let bkImg = document.getElementById("bk");
+    </script>
+  <script src="graphics.js"></script>
+  <script src="pieces.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
