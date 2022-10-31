@@ -6,70 +6,98 @@ const context = canvas.getContext('2d');
 let mouseX = 0;
 let mouseY = 0;
 let length = canvas.height / 8;; // cursor length
+let turn = "white";
 let flag = false;
-let green = "rgb(118,150,86)";
-let white = "rgb(238,238,210)";
+
 
 /* --------------------------- declare game pieces -------------------------- */
-let whitePieces = [];
-let blackPieces = [];
+class Player{
+    constructor(color){
+        this.color = color;
+        this.pieces = [];
+        this.moves = [];
+    }
 
-for (let i = 0; i < 8; i++){
-    whitePieces.push(new Pawn((i * length), (6 * length), "white"));
+    findAllMoves(){
+        for(var i = 0; i < this.pieces.length; i++){
+            if(this.pieces[i].alive){
+                this.pieces[i].findPossibleMoves();
+                for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
+                    this.moves.push(this.pieces[i].possibleMoves[j]);
+                }
+                for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
+                    this.moves.push(this.pieces[i].possibleCaptures[j]);
+                }
+            }
+        }
+    }
+
+    resetAllMoves(){
+        for(var i = 0; i < this.pieces.length; i++){
+            this.pieces[i].resetMoves();
+        }
+        this.moves = [];
+    }
 }
+let white = new Player("white");
+let black = new Player("black");
 
-let WB1 = new Bishop((2 * length), (7 * length), "white");
-whitePieces.push(WB1);
-
-let WB2 = new Bishop((5 * length), (7 * length), "white");
-whitePieces.push(WB2);
+/* -------------------------- generate white pieces ------------------------- */
+for (let i = 0; i < 8; i++){
+    white.pieces.push(new Pawn((i * length), (6 * length), "white"));
+}
+let WR1 = new Rook((0 * length), (7 * length), "white");
+white.pieces.push(WR1);
 
 let WN1 = new knight((1 * length), (7 * length), "white");
-whitePieces.push(WN1);
+white.pieces.push(WN1);
 
-let WN2 = new knight((6 * length), (7 * length), "white");
-whitePieces.push(WN2);
-
-let WR1 = new Rook((0 * length), (7 * length), "white");
-whitePieces.push(WR1);
-
-let WR2 = new Rook((7 * length), (7 * length), "white");
-whitePieces.push(WR2);
+let WB1 = new Bishop((2 * length), (7 * length), "white");
+white.pieces.push(WB1);
 
 let WQ = new Queen((3 * length), (7 * length), "white")
-whitePieces.push(WQ);
+white.pieces.push(WQ);
 
 let WK = new King((4 * length), (7 * length), "white")
-whitePieces.push(WK);
+white.pieces.push(WK);
 
+let WB2 = new Bishop((5 * length), (7 * length), "white");
+white.pieces.push(WB2);
+
+let WN2 = new knight((6 * length), (7 * length), "white");
+white.pieces.push(WN2);
+
+let WR2 = new Rook((7 * length), (7 * length), "white");
+white.pieces.push(WR2);
+
+/* -------------------------- generate black pieces ------------------------- */
 for (let i = 0; i < 8; i++){
-    blackPieces.push(new Pawn((i * length), (1 * length), "black"));
+    black.pieces.push(new Pawn((i * length), (1 * length), "black"));
 }
 
-let BB1 = new Bishop((2 * length), (0 * length), "black");
-blackPieces.push(BB1);
-
-let BB2 = new Bishop((5 * length), (0 * length), "black");
-blackPieces.push(BB2);
+let BR1 = new Rook((0 * length), (0 * length), "black");
+black.pieces.push(BR1);
 
 let BN1 = new knight((1 * length), (0 * length), "black");
-blackPieces.push(BN1);
+black.pieces.push(BN1);
 
-let BN2 = new knight((6 * length), (0 * length), "black");
-blackPieces.push(BN2);
-
-let BR1 = new Rook((0 * length), (0 * length), "black");
-blackPieces.push(BR1);
-
-let BR2 = new Rook((7 * length), (0 * length), "black");
-blackPieces.push(BR2);
-
-let BQ = new Queen((3 * length), (0 * length), "black")
-blackPieces.push(BQ);
+let BB1 = new Bishop((2 * length), (0 * length), "black");
+black.pieces.push(BB1);
 
 let BK = new King((4 * length), (0 * length), "black")
-blackPieces.push(BK);
+black.pieces.push(BK);
 
+let BQ = new Queen((3 * length), (0 * length), "black")
+black.pieces.push(BQ);
+
+let BB2 = new Bishop((5 * length), (0 * length), "black");
+black.pieces.push(BB2);
+
+let BN2 = new knight((6 * length), (0 * length), "black");
+black.pieces.push(BN2);
+
+let BR2 = new Rook((7 * length), (0 * length), "black");
+black.pieces.push(BR2);
 
 let piece;
 let board = [
@@ -85,12 +113,15 @@ let board = [
 
 /* ------------------------- insert pieces into board ------------------------ */
 for (let i = 0; i < 8; i++){ // insert pawns into board
-    board[6][i] = whitePieces[i];
+    board[6][i] = white.pieces[i];
 }
 
 for (let i = 0; i < 8; i++){ // insert pawns into board
-    board[1][i] = blackPieces[i];
+    board[1][i] = black.pieces[i];
 }
+
+white.findAllMoves();
+black.findAllMoves();
 
 /* ----------------------------- update function ---------------------------- */
 setInterval(function(){
@@ -102,19 +133,16 @@ canvas.addEventListener("mousedown", onMouseDown);
 canvas.addEventListener("mouseup", onMouseUp);
 
 /* --------------------------- mouse down function -------------------------- */
-
 function onMouseDown(event){ // when mouse is down, and the mouse is over the piece it removes the piece from the board
     let cell = board[Math.floor(mouseY / length)][Math.floor(mouseX / length)]; // contents of the cell
-    if(cell == 0) return; // checks if user clickd on a a piece
+    if(cell == 0 || cell.color != turn) return; // checks if user clickd on a a piece
     piece = cell; // impports cell contents to cuurent piece variable
     if(mouseX > piece.x && mouseX < piece.x + length  && mouseY > piece.y && mouseY < piece.y + length){
         flag = true;
-        piece.findPossibleMoves();
     }
 }
 
 /* ---------------------------- mouse up function --------------------------- */
-
 function onMouseUp(event){// when mouse is up the piece stops following it and picks piece final location
   if(flag){ 
     flag = false;
@@ -156,9 +184,13 @@ function move(){
     board[Math.floor(mouseY / length)][Math.floor(mouseX / length)] = piece; // places piece into board in new position
     piece.position = [Math.floor(mouseY / length), Math.floor(mouseX / length)]; // changes piece position property to new position
     centerPiece();
-    piece.resetMoves();
+    if(piece.color == "white") turn = "black";
+    else turn = "white";
+    white.resetAllMoves();
+    black.resetAllMoves();
+    black.findAllMoves();
+    white.findAllMoves();
 }
-
 
 function centerPiece(){
     piece.x = (Math.floor(mouseX / length) * length);
@@ -183,7 +215,7 @@ function checkCapture(reqY, reqX, color){
 }
 
 function flipBoard(){
-    context.rotate(90 * Math.PI / 180);
+    context.scale(-1, 1);
 }
 
 
@@ -193,20 +225,23 @@ function draw(){
         highlightPossibleMoves();
     }
 
-    for(var i = 0; i < whitePieces.length; i++){
-        if(whitePieces[i] != null && whitePieces[i].alive == true){
-            drawImage(context, whitePieces[i].image, whitePieces[i].x, whitePieces[i].y, length, length);
+    for(var i = 0; i < white.pieces.length; i++){
+        if(white.pieces[i] != null && white.pieces[i].alive == true){
+            drawImage(context, white.pieces[i].image, white.pieces[i].x, white.pieces[i].y, length, length);
         }
     }
 
-    for(var i = 0; i < blackPieces.length; i++){
-        if(blackPieces[i] != null && blackPieces[i].alive == true){
-            drawImage(context, blackPieces[i].image, blackPieces[i].x, blackPieces[i].y, length, length);
+    for(var i = 0; i < black.pieces.length; i++){
+        if(black.pieces[i] != null && black.pieces[i].alive == true){
+            drawImage(context, black.pieces[i].image, black.pieces[i].x, black.pieces[i].y, length, length);
         }
     }
 }
 
 function drawBoard(){
+    let green = "rgb(118,150,86)";
+    let white = "rgb(238,238,210)";
+
     drawRectangle(context, 0, 0, canvas.width, canvas.height, white);
     for(var i = 0; i < 7; i+= 2){
       for (let j = 0; j < 7; j+= 2) {
@@ -218,6 +253,8 @@ function drawBoard(){
 
 // highlights the next possible moves and or captures
 function highlightPossibleMoves(){
+    let green = "rgb(118,150,86)";
+    let white = "rgb(238,238,210)";
     let highGreen = "rgb(106,135,77)";
     let highWhite = "rgb(214,214,189)";
 

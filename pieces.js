@@ -458,6 +458,42 @@ class King extends Piece{
         else if(checkCapture(posY, posX + 1, this.color)){
             this.possibleCaptures.push([posY, posX + 1]);
         }
+
+        /* ----------------------------- checkForChecks ----------------------------- */
+        for(var i = 0; i < this.possibleMoves.length; i++){
+            if(this.color == "white"){
+                for(var j = 0; j < black.moves.length; j++){
+                    if(this.possibleMoves[i] == black.moves[j]){
+                        this.possibleMoves[i] = null;
+                    }
+                }
+            }
+            else{
+                for(var j = 0; j < white.moves.length; j++){
+                    if(this.possibleMoves[i] == white.moves[j]){
+                        this.possibleMoves[i] = null;
+                    }
+                }
+            }
+        }
+        this.possibleMoves = this.possibleMoves.filter(Boolean);
+        for(var i = 0; i < this.possibleCaptures.length; i++){
+            if(this.color == "white"){
+                for(var j = 0; j < black.moves.length; j++){
+                    if(this.possibleCaptures[i] == black.moves[j]){
+                        this.possibleCaptures[i] = null;
+                    }
+                }
+            }
+            else{
+                for(var j = 0; j < white.moves.length; j++){
+                    if(this.possibleCaptures[i] == white.moves[j]){
+                        this.possibleCaptures[i] = null;
+                    }
+                }
+            }
+        }
+        this.possibleCaptures = this.possibleCaptures.filter(Boolean);
     }
 
 }
