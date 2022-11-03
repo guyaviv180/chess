@@ -16,9 +16,17 @@ class Player{
         this.color = color;
         this.pieces = [];
         this.moves = [];
+        this.checked = false;
     }
 
     findAllMoves(){
+        /* -------------------------- resets previous moves ------------------------- */
+        for(var i = 0; i < this.pieces.length; i++){
+            this.pieces[i].resetMoves();
+        }
+        this.moves = [];
+
+        /* ---------------------------- finds next moves ---------------------------- */
         for(var i = 0; i < this.pieces.length; i++){
             if(this.pieces[i].alive){
                 this.pieces[i].findPossibleMoves();
@@ -32,11 +40,14 @@ class Player{
         }
     }
 
-    resetAllMoves(){
-        for(var i = 0; i < this.pieces.length; i++){
-            this.pieces[i].resetMoves();
+    isChecked(atk){
+        for(var i = 0; i < atk.moves.length; i++){
+            if(atk.moves[i][0] == this.pieces[12].position[0] && atk.moves[i][1] == this.pieces[12].position[1]){
+                this.checked = true;
+                return;
+            }
         }
-        this.moves = [];
+        this.checked = false;
     }
 }
 let white = new Player("white");
@@ -84,11 +95,11 @@ black.pieces.push(BN1);
 let BB1 = new Bishop((2 * length), (0 * length), "black");
 black.pieces.push(BB1);
 
-let BK = new King((4 * length), (0 * length), "black")
-black.pieces.push(BK);
-
 let BQ = new Queen((3 * length), (0 * length), "black")
 black.pieces.push(BQ);
+
+let BK = new King((4 * length), (0 * length), "black")
+black.pieces.push(BK);
 
 let BB2 = new Bishop((5 * length), (0 * length), "black");
 black.pieces.push(BB2);
@@ -132,41 +143,6 @@ canvas.addEventListener("mousemove", onMouseMove);
 canvas.addEventListener("mousedown", onMouseDown);
 canvas.addEventListener("mouseup", onMouseUp);
 
-/* --------------------------- mouse down function -------------------------- */
-function onMouseDown(event){ // when mouse is down, and the mouse is over the piece it removes the piece from the board
-    let cell = board[Math.floor(mouseY / length)][Math.floor(mouseX / length)]; // contents of the cell
-    if(cell == 0 || cell.color != turn) return; // checks if user clickd on a a piece
-    piece = cell; // impports cell contents to cuurent piece variable
-    if(mouseX > piece.x && mouseX < piece.x + length  && mouseY > piece.y && mouseY < piece.y + length){
-        flag = true;
-    }
-}
-
-/* ---------------------------- mouse up function --------------------------- */
-function onMouseUp(event){// when mouse is up the piece stops following it and picks piece final location
-  if(flag){ 
-    flag = false;
-    // legal move
-    for(var i = 0; i < piece.possibleMoves.length; i++){
-        if(Math.floor(mouseY / length) == piece.possibleMoves[i][0] && Math.floor(mouseX / length) == piece.possibleMoves[i][1]){ // checks if requested move is equal to a possible move
-            move();
-            return;
-        }
-    }
-    for(var i = 0; i < piece.possibleCaptures.length; i++){  // checks if requested capture is equal to a possible capture
-        if(Math.floor(mouseY / length) == piece.possibleCaptures[i][0] && Math.floor(mouseX / length) == piece.possibleCaptures[i][1]){
-            board[Math.floor(mouseY / length)][Math.floor(mouseX / length)].alive = false; // kills captures piece
-            move();
-            return;
-        }
-    }
-
-    // illegal move
-    piece.y = (piece.position[0] * length) ; // places piece at former position;
-    piece.x = (piece.position[1] * length);
-  }
-}
-
 function onMouseMove(event){ // follows the mouse
     mouseX = event.x;
     mouseY = event.y;
@@ -179,17 +155,61 @@ function followMouse(){
   }
 }
 
+/* --------------------------- mouse down function -------------------------- */
+function onMouseDown(){ // when mouse is down, and the mouse is over the piece it removes the piece from the board
+    let cell = board[Math.floor(mouseY / length)][Math.floor(mouseX / length)]; // contents of the cell
+    if(cell == 0 || cell.color != turn) return; // checks if user clickd on a a piece
+    piece = cell; // impports cell contents to cuurent piece variable
+    if(mouseX > piece.x && mouseX < piece.x + length  && mouseY > piece.y && mouseY < piece.y + length){
+        flag = true;
+    }
+}
+
+/* ---------------------------- mouse up function --------------------------- */
+function onMouseUp(){// when mouse is up the piece stops following it and picks piece final location
+  if(flag){ 
+    flag = false;
+    // legal move
+    for(var i = 0; i < piece.possibleMoves.length; i++){
+        if(Math.floor(mouseY / length) == piece.possibleMoves[i][0] && Math.floor(mouseX / length) == piece.possibleMoves[i][1]){ // checks if requested move is equal to a possible move
+            move();
+            return;
+        }
+    }
+    for(var i = 0; i < piece.possibleCaptures.length; i++){  // checks if requested capture is equal to a possible capture
+        if(Math.floor(mouseY / length) == piece.possibleCaptures[i][0] && Math.floor(mouseX / length) == piece.possibleCaptures[i][1]){
+            capture();
+            return;
+        }
+    }
+
+    // illegal move
+    piece.y = (piece.position[0] * length) ; // places piece at former position;
+    piece.x = (piece.position[1] * length);
+  }
+}
+
 function move(){
     board[piece.position[0]][piece.position[1]] = 0; // erases piece from board
     board[Math.floor(mouseY / length)][Math.floor(mouseX / length)] = piece; // places piece into board in new position
     piece.position = [Math.floor(mouseY / length), Math.floor(mouseX / length)]; // changes piece position property to new position
     centerPiece();
-    if(piece.color == "white") turn = "black";
-    else turn = "white";
-    white.resetAllMoves();
-    black.resetAllMoves();
     black.findAllMoves();
     white.findAllMoves();
+    black.isChecked(white);
+    white.isChecked(black);
+    if(turn == "white"){
+        turn = "black";
+    }
+    else{
+        turn = "white";
+    }
+    piece = null;
+}
+
+function capture(){
+    board[Math.floor(mouseY / length)][Math.floor(mouseX / length)].alive = false; // kills captures piece
+    move();
 }
 
 function centerPiece(){
@@ -238,6 +258,7 @@ function draw(){
     }
 }
 
+/* ---------------------------- draws game board ---------------------------- */
 function drawBoard(){
     let green = "rgb(118,150,86)";
     let white = "rgb(238,238,210)";
@@ -251,7 +272,7 @@ function drawBoard(){
     }
 }
 
-// highlights the next possible moves and or captures
+/* ----------- highlights the next possible moves and or captures ----------- */
 function highlightPossibleMoves(){
     let green = "rgb(118,150,86)";
     let white = "rgb(238,238,210)";
