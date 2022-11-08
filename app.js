@@ -19,6 +19,46 @@ class Player{
         this.checked = false;
     }
 
+    isChecked(){
+        let atk;
+        if (this.color == "white")
+            atk = black;
+        else atk = white;
+        for(var i = 0; i < atk.moves.length; i++){
+            if(atk.moves[i][0] == this.pieces[12].position[0] && atk.moves[i][1] == this.pieces[12].position[1]){
+                this.checked = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    checkFutureMove(piece, move){
+        let prevPos = [];
+        let taken;
+        for(var i = 0; i < this.moves.length; i++){
+            prevPos[0] = piece.position[0]; prevPos[1] = piece.position[1];
+            taken = board[move[0]][move[1]];
+            board[move[0]][move[1]] = piece;
+            if(this.isChecked()){
+                this.moves.splice(i, 1);
+            }
+            board[move[0]][move[1]] = taken;
+            board[prevPos[0]][prevPos[1]] = piece;
+        }
+    }
+
+    removeIllegalMoves(){
+        for(var i = 0; i < this.pieces.length; i++){
+            for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
+                this.checkFutureMove(this.pieces[i], this.pieces[i].possibleMoves[j]);
+            }
+            for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
+                this.checkFutureMove(this.pieces[i], this.pieces[i].possibleCaptures[j]);
+            }
+        }
+    }
+
     findAllMoves(){
         /* -------------------------- resets previous moves ------------------------- */
         for(var i = 0; i < this.pieces.length; i++){
@@ -38,16 +78,6 @@ class Player{
                 }
             }
         }
-    }
-
-    isChecked(atk){
-        for(var i = 0; i < atk.moves.length; i++){
-            if(atk.moves[i][0] == this.pieces[12].position[0] && atk.moves[i][1] == this.pieces[12].position[1]){
-                this.checked = true;
-                return;
-            }
-        }
-        this.checked = false;
     }
 }
 let white = new Player("white");
@@ -134,6 +164,8 @@ for (let i = 0; i < 8; i++){ // insert pawns into board
 white.findAllMoves();
 black.findAllMoves();
 
+
+
 /* ----------------------------- update function ---------------------------- */
 setInterval(function(){
     draw();
@@ -196,8 +228,10 @@ function move(){
     centerPiece();
     black.findAllMoves();
     white.findAllMoves();
-    black.isChecked(white);
-    white.isChecked(black);
+    black.checked = black.isChecked();
+    white.checked = white.isChecked();
+    white.removeIllegalMoves();
+    black.removeIllegalMoves();
     if(turn == "white"){
         turn = "black";
     }
@@ -237,7 +271,6 @@ function checkCapture(reqY, reqX, color){
 function flipBoard(){
     context.scale(-1, 1);
 }
-
 
 function draw(){
     drawBoard();
