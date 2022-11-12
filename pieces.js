@@ -9,11 +9,27 @@ class Piece{
         this.position = [Math.floor(this.y / length), Math.floor(this.x / length)]
         this.possibleMoves = [];
         this.possibleCaptures = [];
+        this.illegalMoves = [];
+        this.illegalCaptures = [];
+    }
+
+    move(x, y){
+        board[this.position[0]][this.position[1]] = 0; // erases piece from board
+        board[y][x] = this; // places piece into board in new position
+        this.position = [y, x]; // changes piece position property to new position
+        centerPiece();
+        black.findAllMoves();
+        white.findAllMoves();
     }
 
     resetMoves(){
         this.possibleMoves = [];
         this.possibleCaptures = [];
+    }
+
+    resetIllegalMoves(){
+        this.illegalMoves = [];
+        this.illegalCaptures = [];
     }
 
     findPossibleMoves(){}

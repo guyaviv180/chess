@@ -19,46 +19,6 @@ class Player{
         this.checked = false;
     }
 
-    isChecked(){
-        let atk;
-        if (this.color == "white")
-            atk = black;
-        else atk = white;
-        for(var i = 0; i < atk.moves.length; i++){
-            if(atk.moves[i][0] == this.pieces[12].position[0] && atk.moves[i][1] == this.pieces[12].position[1]){
-                this.checked = true;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    checkFutureMove(piece, move){
-        let prevPos = [];
-        let taken;
-        for(var i = 0; i < this.moves.length; i++){
-            prevPos[0] = piece.position[0]; prevPos[1] = piece.position[1];
-            taken = board[move[0]][move[1]];
-            board[move[0]][move[1]] = piece;
-            if(this.isChecked()){
-                this.moves.splice(i, 1);
-            }
-            board[move[0]][move[1]] = taken;
-            board[prevPos[0]][prevPos[1]] = piece;
-        }
-    }
-
-    removeIllegalMoves(){
-        for(var i = 0; i < this.pieces.length; i++){
-            for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
-                this.checkFutureMove(this.pieces[i], this.pieces[i].possibleMoves[j]);
-            }
-            for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
-                this.checkFutureMove(this.pieces[i], this.pieces[i].possibleCaptures[j]);
-            }
-        }
-    }
-
     findAllMoves(){
         /* -------------------------- resets previous moves ------------------------- */
         for(var i = 0; i < this.pieces.length; i++){
@@ -79,6 +39,66 @@ class Player{
             }
         }
     }
+
+    isChecked(){
+        let atk;
+        if (this.color == "white")
+            atk = black;
+        else atk = white;
+        for(var i = 0; i < atk.moves.length; i++){
+            if(atk.moves[i][0] == this.pieces[12].position[0] && atk.moves[i][1] == this.pieces[12].position[1]){
+                this.checked = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    checkFutureMove(piece, move){
+        let prevPos = [];
+        let taken;
+        let res = false;
+        prevPos[0] = piece.position[0]; prevPos[1] = piece.position[1];
+        taken = board[move[0]][move[1]];
+        piece.move(move[1], move[0]);
+        if(this.isChecked()){
+            res = true;
+        }
+        piece.move(prevPos[1], prevPos[0]);
+        board[move[0]][move[1]] = taken;
+        return res;
+    }
+
+    removeIllegalMoves(){
+        for(var i = 0; i < this.pieces.length; i++){
+            this.pieces[i].resetIllegalMoves();
+        }
+
+        for(var i = 0; i < this.pieces.length; i++){
+            for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
+                if(this.checkFutureMove(this.pieces[i], this.pieces[i].possibleMoves[j])){
+                    this.pieces[i].illegalMoves.push(j);
+                }
+                
+            }
+            for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
+                if(this.checkFutureMove(this.pieces[i], this.pieces[i].possibleCaptures[j])){
+                    this.pieces[i].illegalCaptures.push(j);
+                }
+                
+            }
+        }
+        for(var i = 0; i < this.pieces.length; i++){
+            for(var j = 0; j < this.pieces[i].illegalMoves.length; j++){
+                this.pieces[i].possibleMoves[this.pieces[i].illegalMoves[j]] = null;
+            }
+            this.pieces[i].possibleMoves = this.pieces[i].possibleMoves.filter(Boolean)
+            for(var j = 0; j < this.pieces[i].illegalCaptures.length; j++){
+                this.pieces[i].possibleCaptures[this.pieces[i].illegalCaptures[j]] = null;
+            }
+            this.pieces[i].possibleCaptures = this.pieces[i].possibleCaptures.filter(Boolean)
+        }
+    }   
 }
 let white = new Player("white");
 let black = new Player("black");
@@ -222,12 +242,7 @@ function onMouseUp(){// when mouse is up the piece stops following it and picks 
 }
 
 function move(){
-    board[piece.position[0]][piece.position[1]] = 0; // erases piece from board
-    board[Math.floor(mouseY / length)][Math.floor(mouseX / length)] = piece; // places piece into board in new position
-    piece.position = [Math.floor(mouseY / length), Math.floor(mouseX / length)]; // changes piece position property to new position
-    centerPiece();
-    black.findAllMoves();
-    white.findAllMoves();
+    piece.move(Math.floor(mouseX / length), Math.floor(mouseY / length))
     black.checked = black.isChecked();
     white.checked = white.isChecked();
     white.removeIllegalMoves();
