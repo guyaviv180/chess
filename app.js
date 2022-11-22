@@ -11,95 +11,7 @@ let flag = false;
 
 
 /* --------------------------- declare game pieces -------------------------- */
-class Player{
-    constructor(color){
-        this.color = color;
-        this.pieces = [];
-        this.moves = [];
-        this.checked = false;
-    }
 
-    findAllMoves(){
-        /* -------------------------- resets previous moves ------------------------- */
-        for(var i = 0; i < this.pieces.length; i++){
-            this.pieces[i].resetMoves();
-        }
-        this.moves = [];
-
-        /* ---------------------------- finds next moves ---------------------------- */
-        for(var i = 0; i < this.pieces.length; i++){
-            if(this.pieces[i].alive){
-                this.pieces[i].findPossibleMoves();
-                for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
-                    this.moves.push(this.pieces[i].possibleMoves[j]);
-                }
-                for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
-                    this.moves.push(this.pieces[i].possibleCaptures[j]);
-                }
-            }
-        }
-    }
-
-    isChecked(){
-        let atk;
-        if (this.color == "white")
-            atk = black;
-        else atk = white;
-        for(var i = 0; i < atk.moves.length; i++){
-            if(atk.moves[i][0] == this.pieces[12].position[0] && atk.moves[i][1] == this.pieces[12].position[1]){
-                this.checked = true;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    checkFutureMove(piece, move){
-        let prevPos = [];
-        let taken;
-        let res = false;
-        prevPos[0] = piece.position[0]; prevPos[1] = piece.position[1];
-        taken = board[move[0]][move[1]];
-        piece.move(move[1], move[0]);
-        if(this.isChecked()){
-            res = true;
-        }
-        piece.move(prevPos[1], prevPos[0]);
-        board[move[0]][move[1]] = taken;
-        return res;
-    }
-
-    removeIllegalMoves(){
-        for(var i = 0; i < this.pieces.length; i++){
-            this.pieces[i].resetIllegalMoves();
-        }
-
-        for(var i = 0; i < this.pieces.length; i++){
-            for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
-                if(this.checkFutureMove(this.pieces[i], this.pieces[i].possibleMoves[j])){
-                    this.pieces[i].illegalMoves.push(j);
-                }
-                
-            }
-            for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
-                if(this.checkFutureMove(this.pieces[i], this.pieces[i].possibleCaptures[j])){
-                    this.pieces[i].illegalCaptures.push(j);
-                }
-                
-            }
-        }
-        for(var i = 0; i < this.pieces.length; i++){
-            for(var j = 0; j < this.pieces[i].illegalMoves.length; j++){
-                this.pieces[i].possibleMoves[this.pieces[i].illegalMoves[j]] = null;
-            }
-            this.pieces[i].possibleMoves = this.pieces[i].possibleMoves.filter(Boolean)
-            for(var j = 0; j < this.pieces[i].illegalCaptures.length; j++){
-                this.pieces[i].possibleCaptures[this.pieces[i].illegalCaptures[j]] = null;
-            }
-            this.pieces[i].possibleCaptures = this.pieces[i].possibleCaptures.filter(Boolean)
-        }
-    }   
-}
 let white = new Player("white");
 let black = new Player("black");
 
@@ -230,7 +142,7 @@ function onMouseUp(){// when mouse is up the piece stops following it and picks 
     }
     for(var i = 0; i < piece.possibleCaptures.length; i++){  // checks if requested capture is equal to a possible capture
         if(Math.floor(mouseY / length) == piece.possibleCaptures[i][0] && Math.floor(mouseX / length) == piece.possibleCaptures[i][1]){
-            capture();
+            move()
             return;
         }
     }
@@ -243,22 +155,18 @@ function onMouseUp(){// when mouse is up the piece stops following it and picks 
 
 function move(){
     piece.move(Math.floor(mouseX / length), Math.floor(mouseY / length))
-    black.checked = black.isChecked();
-    white.checked = white.isChecked();
-    white.removeIllegalMoves();
-    black.removeIllegalMoves();
+    if (!piece.moved) piece.moved = true;
+    centerPiece();
+
     if(turn == "white"){
         turn = "black";
+        black.removeIllegalMoves();
     }
     else{
         turn = "white";
+        white.removeIllegalMoves();
     }
     piece = null;
-}
-
-function capture(){
-    board[Math.floor(mouseY / length)][Math.floor(mouseX / length)].alive = false; // kills captures piece
-    move();
 }
 
 function centerPiece(){

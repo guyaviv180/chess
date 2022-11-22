@@ -11,13 +11,14 @@ class Piece{
         this.possibleCaptures = [];
         this.illegalMoves = [];
         this.illegalCaptures = [];
+        this.moved = false;
     }
 
     move(x, y){
         board[this.position[0]][this.position[1]] = 0; // erases piece from board
+        if(board[y][x] != 0) board[y][x].alive = false // kills piece in requested position
         board[y][x] = this; // places piece into board in new position
         this.position = [y, x]; // changes piece position property to new position
-        centerPiece();
         black.findAllMoves();
         white.findAllMoves();
     }
@@ -475,41 +476,16 @@ class King extends Piece{
             this.possibleCaptures.push([posY, posX + 1]);
         }
 
-        // /* ----------------------------- checkForChecks ----------------------------- */
-        // for(var i = 0; i < this.possibleMoves.length; i++){
-        //     if(this.color == "white"){
-        //         for(var j = 0; j < black.moves.length; j++){
-        //             if(this.possibleMoves[i][0] == black.moves[j][0] && this.possibleMoves[i][1] == black.moves[j][1]){
-        //                 this.possibleMoves[i] = null;
-        //             }
-        //         }
-        //     }
-        //     else{
-        //         for(var j = 0; j < white.moves.length; j++){
-        //             if(this.possibleMoves[i][0] == white.moves[j][0] && this.possibleMoves[i][1] == white.moves[j][1]){
-        //                 this.possibleMoves[i] = null;
-        //             }
-        //         }
+        // /* ------------------------------ castling ----------------------------- */
+        // if(!this.moved){
+        //     let count = 1;
+        //     while(board[posY][posX + count] == 0){
+        //         if(board[posY][posX + count].type == "Rook")
+        //         count++;
+                
         //     }
         // }
-        // this.possibleMoves = this.possibleMoves.filter(Boolean);
-        // for(var i = 0; i < this.possibleCaptures.length; i++){
-        //     if(this.color == "white"){
-        //         for(var j = 0; j < black.moves.length; j++){
-        //             if(this.possibleCaptures[i][0] == black.moves[j][0] && this.possibleCaptures[i][1] == black.moves[j][1]){
-        //                 this.possibleCaptures[i] = null;
-        //             }
-        //         }
-        //     }
-        //     else{
-        //         for(var j = 0; j < white.moves.length; j++){
-        //             if(this.possibleCaptures[i][0] == white.moves[j][0] && this.possibleCaptures[i][1] == white.moves[j][1]){
-        //                 this.possibleCaptures[i] = null;
-        //             }
-        //         }
-        //     }
-        // }
-        // this.possibleCaptures = this.possibleCaptures.filter(Boolean);
+        
     }
 
 }
