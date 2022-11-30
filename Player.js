@@ -94,8 +94,7 @@ class Player{
         if(!this.pieces[8].moved){
             let flag = true;
             for(var i = 1; i < 4; i++){
-                if(board[this.pieces[12].position[0]][i] != 0) flag = false;
-                //if(this.checkFutureMove(this.pieces[12], [this.pieces[12].position[0], i])) flag = false;
+                if(board[this.pieces[12].position[0]][i] != 0 || this.checkFutureMove(this.pieces[12], [this.pieces[12].position[0], i])) flag = false;
             }
             if(flag){
                 this.pieces[12].possibleMoves.push([this.pieces[12].position[0], this.pieces[12].position[1] + 2])
@@ -106,8 +105,7 @@ class Player{
         if(!this.pieces[15].moved){
             let flag = true;
             for(var i = 5; i < 7; i++){
-                if(board[this.pieces[12].position[0]][i] != 0) flag = false;
-                //if(this.checkFutureMove(this.pieces[12], [this.pieces[12].position[0], i])) flag = false; 
+                if(board[this.pieces[12].position[0]][i] != 0 || this.checkFutureMove(this.pieces[12], [this.pieces[12].position[0], i])) flag = false;
             }
             if(flag) {
                 this.pieces[12].possibleMoves.push([this.pieces[12].position[0], this.pieces[12].position[1] + 2])   
