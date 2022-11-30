@@ -24,7 +24,6 @@ class Player{
                 }
             }
         }
-        this.checkCastle();
     }
 
     isChecked(){
@@ -92,21 +91,27 @@ class Player{
         if(this.pieces[12].moved) return;
 
         /* ------------------------------- long castle ------------------------------ */
-        if(!this.pieces[8].move){
+        if(!this.pieces[8].moved){
             let flag = true;
-            for(var i = 9; i < 12; i++){
-                if(board[this.pieces[i].position[0]][this.pieces[i].position[1]] != 0) flag = false;
+            for(var i = 1; i < 4; i++){
+                if(board[this.pieces[12].position[0]][i] != 0) flag = false;
+                //if(this.checkFutureMove(this.pieces[12], [this.pieces[12].position[0], i])) flag = false;
             }
-            if(flag) this.pieces[12].possibleMoves.push([this.pieces[12].position[0], this.pieces[12].position[1] + 2])
+            if(flag){
+                this.pieces[12].possibleMoves.push([this.pieces[12].position[0], this.pieces[12].position[1] + 2])
+            }
         }
 
         /* ------------------------------- short castle ------------------------------ */
-        if(!this.pieces[15].move){
+        if(!this.pieces[15].moved){
             let flag = true;
-            for(var i = 13; i < 15; i++){
-                if(board[this.pieces[i].position[0]][this.pieces[i].position[1]] != 0) flag = false;
+            for(var i = 5; i < 7; i++){
+                if(board[this.pieces[12].position[0]][i] != 0) flag = false;
+                //if(this.checkFutureMove(this.pieces[12], [this.pieces[12].position[0], i])) flag = false; 
             }
-            if(flag) this.pieces[12].possibleMoves.push([this.pieces[12].position[0], this.pieces[12].position[1] + 2])
+            if(flag) {
+                this.pieces[12].possibleMoves.push([this.pieces[12].position[0], this.pieces[12].position[1] + 2])   
+            }
         }
     }
 }
