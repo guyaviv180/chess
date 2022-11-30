@@ -161,10 +161,12 @@ function move(){
     if(turn == "white"){
         turn = "black";
         black.removeIllegalMoves();
+        black.checkCastle();
     }
     else{
         turn = "white";
         white.removeIllegalMoves();
+        white.checkCastle();
     }
     piece = null;
 }
