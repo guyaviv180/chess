@@ -19,9 +19,6 @@ class Player{
                 for(var j = 0; j < this.pieces[i].possibleMoves.length; j++){
                     this.moves.push(this.pieces[i].possibleMoves[j]);
                 }
-                for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
-                    this.moves.push(this.pieces[i].possibleCaptures[j]);
-                }
             }
         }
     }
@@ -67,22 +64,12 @@ class Player{
                 }
                 
             }
-            for(var j = 0; j < this.pieces[i].possibleCaptures.length; j++){
-                if(this.checkFutureMove(this.pieces[i], this.pieces[i].possibleCaptures[j])){
-                    this.pieces[i].illegalCaptures.push(j);
-                }
-                
-            }
         }
         for(var i = 0; i < this.pieces.length; i++){
             for(var j = 0; j < this.pieces[i].illegalMoves.length; j++){
                 this.pieces[i].possibleMoves[this.pieces[i].illegalMoves[j]] = null;
             }
             this.pieces[i].possibleMoves = this.pieces[i].possibleMoves.filter(Boolean)
-            for(var j = 0; j < this.pieces[i].illegalCaptures.length; j++){
-                this.pieces[i].possibleCaptures[this.pieces[i].illegalCaptures[j]] = null;
-            }
-            this.pieces[i].possibleCaptures = this.pieces[i].possibleCaptures.filter(Boolean)
         }
     }
 

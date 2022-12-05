@@ -8,7 +8,6 @@ class Piece{
         this.type;
         this.position = [Math.floor(this.y / length), Math.floor(this.x / length)]
         this.possibleMoves = [];
-        this.possibleCaptures = [];
         this.illegalMoves = [];
         this.illegalCaptures = [];
         this.moved = false;
@@ -25,7 +24,6 @@ class Piece{
 
     resetMoves(){
         this.possibleMoves = [];
-        this.possibleCaptures = [];
     }
 
     resetIllegalMoves(){
@@ -65,11 +63,11 @@ class Pawn extends Piece{
         }
       
         if(checkCapture(posY + up, posX + up, this.color)){
-            this.possibleCaptures.push([(posY + up), (posX + up)]); // capture diagonally right
+            this.possibleMoves.push([(posY + up), (posX + up)]); // capture diagonally right
         }
 
         if(checkCapture(posY + up, posX - up, this.color)){
-            this.possibleCaptures.push([(posY + up), (posX - up)]); // capture diagonally left
+            this.possibleMoves.push([(posY + up), (posX - up)]); // capture diagonally left
         }
     }
 }
@@ -98,7 +96,7 @@ class Bishop extends Piece{
             count ++;
         }
         if(checkCapture(posY + count, posX + count, this.color)){
-            this.possibleCaptures.push([posY + count, posX + count]);
+            this.possibleMoves.push([posY + count, posX + count]);
         }
 
         count = 1;
@@ -109,7 +107,7 @@ class Bishop extends Piece{
             count ++;
         }
         if(checkCapture(posY - count, posX + count, this.color)){
-            this.possibleCaptures.push([posY - count, posX + count]);
+            this.possibleMoves.push([posY - count, posX + count]);
         }
 
         count = 1;
@@ -120,7 +118,7 @@ class Bishop extends Piece{
             count ++;
         }
         if(checkCapture(posY + count, posX - count, this.color)){
-            this.possibleCaptures.push([posY + count, posX - count]);
+            this.possibleMoves.push([posY + count, posX - count]);
         }
 
         count = 1;
@@ -131,7 +129,7 @@ class Bishop extends Piece{
             count ++;
         }
         if(checkCapture(posY - count, posX - count, this.color)){
-            this.possibleCaptures.push([posY - count, posX - count]);
+            this.possibleMoves.push([posY - count, posX - count]);
         }
 
         count = 1;
@@ -160,7 +158,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY + 2, posX + 1]);
         }
         else if(checkCapture(posY + 2, posX + 1, this.color)){
-            this.possibleCaptures.push([posY + 2, posX + 1]);
+            this.possibleMoves.push([posY + 2, posX + 1]);
         }
 
         /* ------------------------------------ 2 ----------------------------------- */
@@ -168,7 +166,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY + 2, posX - 1]);
         }
         else if(checkCapture(posY + 2, posX - 1, this.color)){
-            this.possibleCaptures.push([posY + 2, posX - 1]);
+            this.possibleMoves.push([posY + 2, posX - 1]);
         }
 
         /* ------------------------------------ 3 ----------------------------------- */
@@ -176,7 +174,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY - 2, posX - 1]);
         }
         else if(checkCapture(posY - 2, posX - 1, this.color)){
-            this.possibleCaptures.push([posY - 2, posX - 1]);
+            this.possibleMoves.push([posY - 2, posX - 1]);
         }
 
         /* ------------------------------------ 4 ----------------------------------- */
@@ -184,7 +182,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY - 2, posX + 1]);
         }
         else if(checkCapture(posY - 2, posX + 1, this.color)){
-            this.possibleCaptures.push([posY - 2, posX + 1]);
+            this.possibleMoves.push([posY - 2, posX + 1]);
         }
 
         /* ------------------------------------ 5 ----------------------------------- */
@@ -192,7 +190,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY + 1, posX + 2]);
         }
         else if(checkCapture(posY +1, posX + 2, this.color)){
-            this.possibleCaptures.push([posY + 1, posX + 2]);
+            this.possibleMoves.push([posY + 1, posX + 2]);
         }
 
         /* ------------------------------------ 6 ----------------------------------- */
@@ -200,7 +198,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY - 1, posX + 2]);
         }
         else if(checkCapture(posY - 1, posX + 2, this.color)){
-            this.possibleCaptures.push([posY - 1, posX + 2]);
+            this.possibleMoves.push([posY - 1, posX + 2]);
         }
 
         /* ------------------------------------ 7 ----------------------------------- */
@@ -208,7 +206,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY + 1, posX - 2]);
         }
         else if(checkCapture(posY + 1, posX - 2, this.color)){
-            this.possibleCaptures.push([posY + 1, posX - 2]);
+            this.possibleMoves.push([posY + 1, posX - 2]);
         }
 
         /* ------------------------------------ 8 ----------------------------------- */
@@ -216,7 +214,7 @@ class knight extends Piece{
             this.possibleMoves.push([posY - 1, posX - 2]);
         }
         else if(checkCapture(posY - 1, posX - 2, this.color)){
-            this.possibleCaptures.push([posY - 1, posX - 2]);
+            this.possibleMoves.push([posY - 1, posX - 2]);
         }
     }
 
@@ -246,7 +244,7 @@ class Rook extends Piece{
             count ++;
         }
         if(checkCapture(posY + count, posX, this.color)){
-            this.possibleCaptures.push([posY + count, posX]);
+            this.possibleMoves.push([posY + count, posX]);
         }
 
         count = 1;
@@ -257,7 +255,7 @@ class Rook extends Piece{
             count ++;
         }
         if(checkCapture(posY - count, posX, this.color)){
-            this.possibleCaptures.push([posY - count, posX]);
+            this.possibleMoves.push([posY - count, posX]);
         }
 
         count = 1;
@@ -268,7 +266,7 @@ class Rook extends Piece{
             count ++;
         }
         if(checkCapture(posY, posX - count, this.color)){
-            this.possibleCaptures.push([posY, posX - count]);
+            this.possibleMoves.push([posY, posX - count]);
         }
 
         count = 1;
@@ -279,7 +277,7 @@ class Rook extends Piece{
             count ++;
         }
         if(checkCapture(posY, posX + count, this.color)){
-            this.possibleCaptures.push([posY, posX + count]);
+            this.possibleMoves.push([posY, posX + count]);
         }
 
         count = 1;
@@ -311,7 +309,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY + count, posX, this.color)){
-            this.possibleCaptures.push([posY + count, posX]);
+            this.possibleMoves.push([posY + count, posX]);
         }
 
         count = 1;
@@ -322,7 +320,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY - count, posX, this.color)){
-            this.possibleCaptures.push([posY - count, posX]);
+            this.possibleMoves.push([posY - count, posX]);
         }
 
         count = 1;
@@ -333,7 +331,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY, posX - count, this.color)){
-            this.possibleCaptures.push([posY, posX - count]);
+            this.possibleMoves.push([posY, posX - count]);
         }
 
         count = 1;
@@ -344,7 +342,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY, posX + count, this.color)){
-            this.possibleCaptures.push([posY, posX + count]);
+            this.possibleMoves.push([posY, posX + count]);
         }
 
         count = 1;
@@ -355,7 +353,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY + count, posX + count, this.color)){
-            this.possibleCaptures.push([posY + count, posX + count]);
+            this.possibleMoves.push([posY + count, posX + count]);
         }
 
         count = 1;
@@ -366,7 +364,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY - count, posX + count, this.color)){
-            this.possibleCaptures.push([posY - count, posX + count]);
+            this.possibleMoves.push([posY - count, posX + count]);
         }
 
         count = 1;
@@ -377,7 +375,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY + count, posX - count, this.color)){
-            this.possibleCaptures.push([posY + count, posX - count]);
+            this.possibleMoves.push([posY + count, posX - count]);
         }
 
         count = 1;
@@ -388,7 +386,7 @@ class Queen extends Piece{
             count ++;
         }
         if(checkCapture(posY - count, posX - count, this.color)){
-            this.possibleCaptures.push([posY - count, posX - count]);
+            this.possibleMoves.push([posY - count, posX - count]);
         }
 
         count = 1;
@@ -417,7 +415,7 @@ class King extends Piece{
             this.possibleMoves.push([posY + 1, posX + 1]);
         }
         else if(checkCapture(posY + 1, posX + 1, this.color)){
-            this.possibleCaptures.push([posY + 1, posX + 1]);
+            this.possibleMoves.push([posY + 1, posX + 1]);
         }
 
         /* ------------------------------------ 2 ----------------------------------- */
@@ -425,7 +423,7 @@ class King extends Piece{
             this.possibleMoves.push([posY + 1, posX - 1]);
         }
         else if(checkCapture(posY + 1, posX - 1, this.color)){
-            this.possibleCaptures.push([posY + 1, posX - 1]);
+            this.possibleMoves.push([posY + 1, posX - 1]);
         }
 
         /* ------------------------------------ 3 ----------------------------------- */
@@ -433,7 +431,7 @@ class King extends Piece{
             this.possibleMoves.push([posY - 1, posX - 1]);
         }
         else if(checkCapture(posY - 1, posX - 1, this.color)){
-            this.possibleCaptures.push([posY - 1, posX - 1]);
+            this.possibleMoves.push([posY - 1, posX - 1]);
         }
 
         /* ------------------------------------ 4 ----------------------------------- */
@@ -441,7 +439,7 @@ class King extends Piece{
             this.possibleMoves.push([posY - 1, posX + 1]);
         }
         else if(checkCapture(posY - 1, posX + 1, this.color)){
-            this.possibleCaptures.push([posY - 1, posX + 1]);
+            this.possibleMoves.push([posY - 1, posX + 1]);
         }
 
         /* ------------------------------------ 5 ----------------------------------- */
@@ -449,7 +447,7 @@ class King extends Piece{
             this.possibleMoves.push([posY + 1, posX]);
         }
         else if(checkCapture(posY +1, posX, this.color)){
-            this.possibleCaptures.push([posY + 1, posX]);
+            this.possibleMoves.push([posY + 1, posX]);
         }
 
         /* ------------------------------------ 6 ----------------------------------- */
@@ -457,7 +455,7 @@ class King extends Piece{
             this.possibleMoves.push([posY - 1, posX]);
         }
         else if(checkCapture(posY - 1, posX, this.color)){
-            this.possibleCaptures.push([posY - 1, posX]);
+            this.possibleMoves.push([posY - 1, posX]);
         }
 
         /* ------------------------------------ 7 ----------------------------------- */
@@ -465,7 +463,7 @@ class King extends Piece{
             this.possibleMoves.push([posY, posX - 1]);
         }
         else if(checkCapture(posY, posX - 1, this.color)){
-            this.possibleCaptures.push([posY, posX - 1]);
+            this.possibleMoves.push([posY, posX - 1]);
         }
 
         /* ------------------------------------ 8 ----------------------------------- */
@@ -473,18 +471,8 @@ class King extends Piece{
             this.possibleMoves.push([posY, posX + 1]);
         }
         else if(checkCapture(posY, posX + 1, this.color)){
-            this.possibleCaptures.push([posY, posX + 1]);
+            this.possibleMoves.push([posY, posX + 1]);
         }
-
-        // /* ------------------------------ castling ----------------------------- */
-        // if(!this.moved){
-        //     let count = 1;
-        //     while(board[posY][posX + count] == 0){
-        //         if(board[posY][posX + count].type == "Rook")
-        //         count++;
-                
-        //     }
-        // }
         
     }
 

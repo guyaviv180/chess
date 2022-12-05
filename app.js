@@ -140,12 +140,6 @@ function onMouseUp(){// when mouse is up the piece stops following it and picks 
             return;
         }
     }
-    for(var i = 0; i < piece.possibleCaptures.length; i++){  // checks if requested capture is equal to a possible capture
-        if(Math.floor(mouseY / length) == piece.possibleCaptures[i][0] && Math.floor(mouseX / length) == piece.possibleCaptures[i][1]){
-            move()
-            return;
-        }
-    }
 
     // illegal move
     piece.y = (piece.position[0] * length) ; // places piece at former position;
@@ -230,6 +224,11 @@ function drawBoard(){
     }
 }
 
+function isCapture(y, x){
+    if(board[y][x] != 0) return true;
+    return false;
+}
+
 /* ----------- highlights the next possible moves and or captures ----------- */
 function highlightPossibleMoves(){
     let green = "rgb(118,150,86)";
@@ -243,48 +242,45 @@ function highlightPossibleMoves(){
     for(var i = 0; i < piece.possibleMoves.length; i++){
         posY = piece.possibleMoves[i][0];
         posX = piece.possibleMoves[i][1];
-        if(posY % 2 == 0){
-            if(posX % 2 == 0){
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highWhite, 0, highWhite);
+        if(isCapture(posY, posX)){
+            if(posY % 2 == 0){
+                if(posX % 2 == 0){
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highWhite, 0, highWhite);
+                    drawArc((posX * length) + (length / 2), (piece.possibleMoves[i][0] * length) + (length / 2), (length / 2) - 10, white, 0, white);
+                }
+                else{
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highGreen, 0, highGreen);
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2) - 10, green, 0, green);
+                }
             }
             else{
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highGreen, 0, highGreen);
+                if(piece.possibleMoves[i][1] % 2 == 0){
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highGreen, 0, highGreen);
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2) - 10, green, 0, green);
+                }
+                else{
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highWhite, 0, highWhite);
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2) - 10, white, 0, white);
+                }
             }
         }
         else{
-            if(posX % 2 == 0){
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highGreen, 0, highGreen);
+            if(posY % 2 == 0){
+                if(posX % 2 == 0){
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highWhite, 0, highWhite);
+                }
+                else{
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highGreen, 0, highGreen);
+                }
             }
             else{
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highWhite, 0, highWhite);
+                if(posX % 2 == 0){
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highGreen, 0, highGreen);
+                }
+                else{
+                    drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), 15, highWhite, 0, highWhite);
+                }
             }
         }
-        
-    }
-    
-    for(var i = 0; i < piece.possibleCaptures.length; i++){
-        posY = piece.possibleCaptures[i][0];
-        posX = piece.possibleCaptures[i][1];
-        if(posY % 2 == 0){
-            if(posX % 2 == 0){
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highWhite, 0, highWhite);
-                drawArc((posX * length) + (length / 2), (piece.possibleCaptures[i][0] * length) + (length / 2), (length / 2) - 10, white, 0, white);
-            }
-            else{
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highGreen, 0, highGreen);
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2) - 10, green, 0, green);
-            }
-        }
-        else{
-            if(piece.possibleCaptures[i][1] % 2 == 0){
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highGreen, 0, highGreen);
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2) - 10, green, 0, green);
-            }
-            else{
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2), highWhite, 0, highWhite);
-                drawArc((posX * length) + (length / 2), (posY * length) + (length / 2), (length / 2) - 10, white, 0, white);
-            }
-        }
-        
     }
 }
